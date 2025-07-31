@@ -1,30 +1,26 @@
 package src.com.coderscampus.src.salesanalysis;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileService {
-    public ArrayList<SalesReport> readFile(String filePath) throws FileNotFoundException {
-        ArrayList<SalesReport> salesReports = new ArrayList<>();
-        File file = new File(filePath);
+    public List<SalesRecord> readSalesRecordFile(String fileAddress) throws FileNotFoundException {
+        File file = new File(fileAddress);
         Scanner input = new Scanner(file);
+        List<SalesRecord> salesRecords = new ArrayList<>();
         input.nextLine();
-        while(input.hasNextLine()) {
-            String line = input.nextLine();
+        String[] lineParts;
+        while (input.hasNext()) {
+            lineParts = input.nextLine().split(",");
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MMM-yy");
-            String[] record = new String[2];
-            record[0] = line.split(",")[0];
-            record[1] = line.split(",")[1];
-            YearMonth yearMonth = YearMonth.parse(record[0], dateTimeFormatter);
-            int sale = Integer.parseInt(record[1]);
-            SalesReport salesReport = new SalesReport(yearMonth, sale);
-            salesReports.add(salesReport);
+            YearMonth yearMonth = YearMonth.parse(lineParts[0], dateTimeFormatter);
+            int sale = Integer.parseInt(lineParts[1]);
+            salesRecords.add(new SalesRecord(yearMonth, sale));
         }
-        return salesReports;
+        return salesRecords;
     }
-
 }
