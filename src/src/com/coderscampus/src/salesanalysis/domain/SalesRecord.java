@@ -1,7 +1,6 @@
-package src.com.coderscampus.src.salesanalysis;
+package src.com.coderscampus.src.salesanalysis.domain;
 
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 
 public class SalesRecord {
     private YearMonth yearMonth;
@@ -32,8 +31,5 @@ public class SalesRecord {
         return yearMonth.getYear();
     }
 
-    public String toString() {
-        return yearMonth.format(DateTimeFormatter.ofPattern("MMM-yy")) + " " + sale;
-    }
 }
 

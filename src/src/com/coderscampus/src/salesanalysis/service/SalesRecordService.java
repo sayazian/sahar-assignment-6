@@ -1,42 +1,32 @@
-package src.com.coderscampus.src.salesanalysis;
-import java.io.FileNotFoundException;
+package src.com.coderscampus.src.salesanalysis.service;
+import src.com.coderscampus.src.salesanalysis.domain.SalesRecord;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SalesReport {
-    String model;
-    String fileAddress;
-    List<SalesRecord> salesRecords;
+public class SalesRecordService {
 
-    public SalesReport(String model, String fileAddress) {
-        this.model = model;
-        this.fileAddress = fileAddress;
+    private List<SalesRecord> extractSalesRecords(String fileAddress) {
+        FileService fileService = new FileService();
+            return fileService.readSalesRecordFile(fileAddress);
     }
 
-    public String toString() {
+    public String generateReport(String model, String fileAddress) {
         StringBuilder report = new StringBuilder();
+        List<SalesRecord> salesRecords = extractSalesRecords(fileAddress);
         report.append(model).append(" Yearly Sales Report\n");
         report.append("---------------------------\n");
-        extractSalesRecords();
-        report.append(generateYearlyReport());
-        report.append(generateBestAndWorstReport());
+        extractSalesRecords(fileAddress);
+        report.append(generateYearlyReport(salesRecords));
+        report.append(generateBestAndWorstReport(salesRecords, model));
         return report.toString();
     }
 
-    private void extractSalesRecords() {
-        FileService fileService = new FileService();
-        try {
-            salesRecords = fileService.readSalesRecordFile(fileAddress);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private String generateYearlyReport() {
+    private String generateYearlyReport(List<SalesRecord> salesRecords) {
         StringBuilder yearlyReport = new StringBuilder();
-
         Map<Integer, List<SalesRecord>> yearSalesRecordListMap = salesRecords.stream()
                 .collect(Collectors.groupingBy(SalesRecord::getYear));
 
@@ -44,12 +34,10 @@ public class SalesReport {
                 map(entry -> entry.getKey().toString() + " -> "
                         + entry.getValue().stream().mapToInt(SalesRecord::getSale).sum())
                 .collect(Collectors.joining("\n")));
-
         return yearlyReport.append("\n").toString();
     }
 
-
-    private String generateBestAndWorstReport() {
+    private String generateBestAndWorstReport(List<SalesRecord> salesRecords, String model) {
         Comparator<SalesRecord> salesRecordComparator = Comparator.comparingInt(SalesRecord::getSale);
         StringBuilder report = new StringBuilder();
         salesRecords.stream().max(salesRecordComparator).

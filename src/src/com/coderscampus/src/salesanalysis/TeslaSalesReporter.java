@@ -1,4 +1,5 @@
 package src.com.coderscampus.src.salesanalysis;
+import src.com.coderscampus.src.salesanalysis.service.SalesRecordService;
 
 public class TeslaSalesReporter {
     public static void main(String[] args) {
@@ -6,8 +7,10 @@ public class TeslaSalesReporter {
         String modelSFileAddress = "modelS.csv";
         String modelXFileAddress = "modelX.csv";
 
-        System.out.println(new SalesReport("Model 3", model3FileAddress));
-        System.out.println(new SalesReport("Model S", modelSFileAddress));
-        System.out.println(new SalesReport("Model X", modelXFileAddress));
+        SalesRecordService salesRecordService = new SalesRecordService();
+
+        System.out.println(salesRecordService.generateReport("Model 3", model3FileAddress));
+        System.out.println(salesRecordService.generateReport("Model S", modelSFileAddress));
+        System.out.println(salesRecordService.generateReport("Model X", modelXFileAddress));
     }
 }
