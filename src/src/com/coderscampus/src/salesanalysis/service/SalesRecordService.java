@@ -1,4 +1,5 @@
 package src.com.coderscampus.src.salesanalysis.service;
+
 import src.com.coderscampus.src.salesanalysis.domain.SalesRecord;
 
 import java.time.format.DateTimeFormatter;
@@ -11,53 +12,50 @@ public class SalesRecordService {
 
     private List<SalesRecord> extractSalesRecords(String fileAddress) {
         FileService fileService = new FileService();
-            return fileService.readSalesRecordFile(fileAddress);
+        return fileService.readSalesRecordFile(fileAddress);
     }
 
     public String generateReport(String model, String fileAddress) {
-        StringBuilder report = new StringBuilder();
+        String report;
         List<SalesRecord> salesRecords = extractSalesRecords(fileAddress);
-        report.append(model).append(" Yearly Sales Report\n");
-        report.append("---------------------------\n");
-        extractSalesRecords(fileAddress);
-        report.append(generateYearlyReport(salesRecords));
-        report.append(generateBestAndWorstReport(salesRecords, model));
-        return report.toString();
+        report = model + " Yearly Sales Report\n" + "---------------------------\n" +
+                generateYearlyReport(salesRecords) +
+                generateBestAndWorstReport(salesRecords, model);
+        return report;
     }
 
     private String generateYearlyReport(List<SalesRecord> salesRecords) {
-        StringBuilder yearlyReport = new StringBuilder();
+        String yearlyReport;
         Map<Integer, List<SalesRecord>> yearSalesRecordListMap = salesRecords.stream()
                 .collect(Collectors.groupingBy(SalesRecord::getYear));
-
-        yearlyReport.append(yearSalesRecordListMap.entrySet().stream().
+        yearlyReport = yearSalesRecordListMap.entrySet().stream().
                 map(entry -> entry.getKey().toString() + " -> "
                         + entry.getValue().stream().mapToInt(SalesRecord::getSale).sum())
-                .collect(Collectors.joining("\n")));
-        return yearlyReport.append("\n").toString();
+                .collect(Collectors.joining("\n")) + "\n";
+        return yearlyReport;
     }
 
     private String generateBestAndWorstReport(List<SalesRecord> salesRecords, String model) {
         Comparator<SalesRecord> salesRecordComparator = Comparator.comparingInt(SalesRecord::getSale);
-        StringBuilder report = new StringBuilder();
+        final String[] report = new String[2];
         salesRecords.stream().max(salesRecordComparator).
                 ifPresent(salesRecord -> {
-                            (report.append("The best month for ").
-                                    append(model).
-                                    append(" was: ")).
-                                    append(salesRecord.getYearMonth().format(DateTimeFormatter.ofPattern("yyyy-MM"))).
-                                    append("\n");
+                            report[0] = "The best month for " +
+                                    model +
+                                    " was: " +
+                                    salesRecord.getYearMonth().format(DateTimeFormatter.ofPattern("yyyy-MM")) +
+                                    "\n";
                         }
                 );
         salesRecords.stream().min(salesRecordComparator).
                 ifPresent(salesRecord -> {
-                            (report.append("The worst month for ").
-                                    append(model).
-                                    append(" was: ")).
-                                    append(salesRecord.getYearMonth().format(DateTimeFormatter.ofPattern("yyyy-MM"))).
-                                    append("\n");
+                            report[1] = "The worst month for " +
+                                    model +
+                                    " was: " +
+                                    salesRecord.getYearMonth().format(DateTimeFormatter.ofPattern("yyyy-MM")) +
+                                    "\n";
                         }
                 );
-        return report.toString();
+        return (report[0] + report[1]);
     }
 }

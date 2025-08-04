@@ -18,9 +18,10 @@ public class FileService {
             String line;
             bufferedReader.readLine();
             String[] lineParts;
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MMM-yy");
+
             while ((line = bufferedReader.readLine()) != null) {
                 lineParts = line.split(",");
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MMM-yy");
                 YearMonth yearMonth = YearMonth.parse(lineParts[0], dateTimeFormatter);
                 int sale = Integer.parseInt(lineParts[1]);
                 salesRecords.add(new SalesRecord(yearMonth, sale));

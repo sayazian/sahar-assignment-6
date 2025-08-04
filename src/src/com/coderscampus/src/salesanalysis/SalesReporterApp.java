@@ -1,7 +1,7 @@
 package src.com.coderscampus.src.salesanalysis;
 import src.com.coderscampus.src.salesanalysis.service.SalesRecordService;
 
-public class TeslaSalesReporter {
+public class SalesReporterApp {
     public static void main(String[] args) {
         String model3FileAddress = "model3.csv";
         String modelSFileAddress = "modelS.csv";
